@@ -1,0 +1,105 @@
+						GOLDEN GROFERS
+
+	ROLLNO1: 2022014            							  ROLL NO2:2022253
+	ABHAY DAGAR									 KRISH KUMAR BHORUKA
+
+
+
+			Diverse queries containing various select, update, etc commands
+
+
+
+Query 1: Retrieve Customer Information for a Given Order
+
+SELECT customer.customer_id, customer.mail_id, customer.phone_number, orders.order_id, orders.order_date, orders.amount
+FROM customer
+JOIN orders ON customer.customer_id = orders.customer_id
+WHERE orders.order_id = 1;
+
+
+Query 2: List All Managers and Their Associated Stores
+
+SELECT manager.name, store.city
+FROM manager
+JOIN store ON manager.manager_id = store.manager_id;
+
+
+Query 3: Find the Total Sales Amount for a Specific Product Category
+
+SELECT category.category_name, SUM(orders.amount) AS total_sales
+FROM category
+JOIN product ON category.category_id = product.category_id
+JOIN cart ON product.product_id = cart.product_id
+JOIN orders ON cart.order_id = orders.order_id
+GROUP BY category.category_name;
+
+
+Query 4: Identify Customers with Multiple Orders
+
+SELECT customer.customer_id, customer.mail_id, COUNT(orders.order_id) AS order_count
+FROM customer
+JOIN orders ON customer.customer_id = orders.customer_id
+GROUP BY customer.customer_id
+HAVING order_count > 1;
+
+
+Query 5: Filter Products
+
+SELECT * FROM product WHERE category_id = 3 AND price BETWEEN 50 AND 100;
+
+
+Query 6: Cancel a particular Order Condition that it should be cancelled within one day only and by a user(Example:User_id -1)
+
+DELETE cart, orders
+FROM cart
+JOIN orders ON cart.order_id = orders.order_id
+WHERE orders.customer_id = 1
+  AND orders.order_id = 1
+  AND TIMESTAMPDIFF(DAY, orders.order_date, NOW()) <= 1;
+
+
+Query 7: Update Product Quantity after Order Shipment (Keeping Existing Quantity if Below 5)
+
+UPDATE product
+JOIN cart ON product.product_id = cart.product_id
+SET product.quantity = CASE
+    WHEN (product.quantity - cart.quantity) > 5 THEN (product.quantity - cart.quantity)
+    ELSE product.quantity
+END
+WHERE cart.order_id = 3; -- Change to the desired order_id
+
+
+Query 8: Firing a Delivery Partner cond that not delivered any order
+
+DELETE dp, a
+FROM partner dp
+JOIN address a ON dp.address_id = a.address_id
+WHERE dp.partner_id =8 
+  AND dp.status = 0
+  AND NOT EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.partner_id = dp.partner_id
+  ); 
+
+
+Query 9: Update the Password for a Specific Customer
+UPDATE customer
+SET customer_pass = 'abcd@1234'
+WHERE customer_id = 6; -- Change to the desired customer_id
+
+
+Query 10: Update Stock of Products with Low Stock (Quantity Less Than 5)
+
+UPDATE product
+SET quantity = 10
+WHERE quantity < 5 AND product_id > 0;
+
+
+
+
+
+THE RELATIONAL ALGEBRAIC EXPRESSION, RELATIONAL SCHEMAS, CONSTRAINTS INFO IS IN THE DOC BELOW:
+
+https://docs.google.com/document/d/e/2PACX-1vQAl_PBBUd9qmleigdFeH-w3bDGibAO_EZMQ1YUhPcXaha738sBFZGgZOTRKG3rH7w0oP2Eq5sYYqG7/pub
+
